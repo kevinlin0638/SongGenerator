@@ -48,5 +48,9 @@ class SoundGenerator:
         # 寫入 Wave 檔案
         wwf.write('HomeWork.wav', self.sample_rate, wave_data)
 
+    def save_w(self, wave_data, name):
+        # 寫入 Wave 檔案
+        wwf.write(name+'.wav', self.sample_rate, wave_data)
+
 
 

@@ -112,11 +112,19 @@ class GUIHandler:
         for i, j in enumerate(data_low[:-25000]):
             data[i+25000] += data_low[i]
         data.extend(data_low[-25000:])
-        print(data_low)
         self.generator.save_wave(np.array(data))
         msb._show('成功', '輸出成功!')
 
-
+    def btn_output_handler(self):
+        if self.filename_inp.get() is '':
+            print('請輸出檔案名稱')
+            msb._show('錯誤', '請打上輸出檔案名稱')
+        else:
+            data = []
+            for i in self.generator.spectrum:
+                data.extend(self.generator.generate_wave(i[0], i[1]))
+            self.generator.save_w(np.array(data), self.filename_inp.get())
+            msb._show('成功', '輸出成功!')
 
 
 
