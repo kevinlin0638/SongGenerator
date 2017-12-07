@@ -1,9 +1,6 @@
 # -*-coding:utf-8-*-
 import numpy as np
-import pyaudio
-import wave
 import scipy.io.wavfile as wwf
-import matplotlib.pyplot as pl
 
 
 class SoundGenerator:
