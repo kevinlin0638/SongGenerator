@@ -25,7 +25,9 @@ class GUIHandler:
         self.outputfn_txt = tk.Label(self.mtk, text='取樣率(預設:16200) : ').grid(row=0, column=2)
 
         self.btn_output = tk.Button(self.mtk, text='作業輸出(小蜜蜂雙聲道)', command=self.homeworkout)
-        self.btn_output.grid(row=1, column=1)
+        self.btn_output2 = tk.Button(self.mtk, text='作業輸出(頻率調製)', command=self.frehomeworkout)
+        self.btn_output.grid(row=1, column=1, sticky='E', padx=10)
+        self.btn_output2.grid(row=1, column=1, sticky='W', padx=10)
 
 
         self.outputfn_txt = tk.Label(self.mtk, text='使用教學 : 請輸入 1 ~ 7(Do ~ Si)  0 為休止符 並輸入拍子數').grid(row=2, column=1, pady=40)
@@ -112,7 +114,24 @@ class GUIHandler:
         for i, j in enumerate(data_low[:-25000]):
             data[i+25000] += data_low[i]
         data.extend(data_low[-25000:])
-        self.generator.save_wave(np.array(data))
+        self.generator.save_wave(np.array(data), 0)
+        msb._show('成功', '輸出成功!')
+
+    def frehomeworkout(self):
+        data = []
+        data_low = []
+        spec = [[5, 1], [3, 1], [3, 2], [4, 1], [2, 1], [2, 2], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [5, 1], [5, 2],
+                [5, 1], [3, 1], [3, 2], [4, 1], [2, 1], [2, 2],
+                [1, 1], [3, 1], [5, 1], [5, 1], [3, 4], [2, 1], [2, 1], [2, 1], [2, 1], [2, 1], [3, 1], [4, 2], [3, 1],
+                [3, 1], [3, 1], [3, 1], [3, 1], [4, 1], [5, 2],
+                [5, 1], [3, 1], [3, 2], [4, 1], [2, 1], [2, 2], [1, 1], [3, 1], [5, 1], [5, 1], [1, 4]]
+        for i in spec:
+            data.extend(self.generator.kappa(i[0], i[1], False))
+            # data_low.extend(self.generator.kappa(i[0], i[1], True))
+        # for i, j in enumerate(data_low[:-25000]):
+        #     data[i + 25000] += data_low[i]
+        # data.extend(data_low[-25000:])
+        self.generator.save_wave(np.array(data), 1)
         msb._show('成功', '輸出成功!')
 
     def btn_output_handler(self):
