@@ -18,7 +18,7 @@ class GUIHandler:
         self.filename_inp = tk.Entry(self.mtk)
         self.filename_inp.grid(row=1, column=0, padx=10)
 
-        self.outputfn_txt = tk.Label(self.mtk, text='輸出檔名 : ').grid(row=0, column=0)
+        self.outputfn_txt = tk.Label(self.mtk, text='輸出(匯入)檔名 : ').grid(row=0, column=0)
 
         self.sample_rate = tk.Entry(self.mtk).grid(row=1, column=2, padx=10)
 
@@ -29,6 +29,8 @@ class GUIHandler:
         self.btn_output.grid(row=1, column=1, sticky='E', padx=10)
         self.btn_output2.grid(row=1, column=1, sticky='W', padx=10)
 
+        self.btn_inputTxt = tk.Button(self.mtk, text='從txt匯入', command=self.inputTXT)
+        self.btn_inputTxt.grid(row=2, column=0, pady=20)
 
         self.outputfn_txt = tk.Label(self.mtk, text='使用教學 : 請輸入 1 ~ 7(Do ~ Si)  0 為休止符 並輸入拍子數').grid(row=2, column=1, pady=40)
 
@@ -49,6 +51,44 @@ class GUIHandler:
 
         self.btn_output = tk.Button(self.mtk, text='輸出檔案',command=self.btn_output_handler)
         self.btn_output.grid(row=6, column=1)
+    def inputTXT(self):
+        if self.filename_inp.get() is '':
+            print('請打上輸出檔案名稱')
+            msb._show('錯誤', '請打上txt檔案名稱(不須加.txt)')
+        else:
+            file_name = self.filename_inp.get()
+            p = open(file_name+'.txt', 'r')
+            if p is None:
+                msb._show('錯誤', '請打上正確的txt檔案名稱(不須加.txt)')
+                return
+            inf = p.read()
+            inf = inf.split(' ')
+            print(inf)
+            if inf[-1] is '':
+                del inf[-1]
+            try:
+                for i, j in enumerate(inf):
+                    inf[i] = list(map(int, j.split(',')))
+            except ValueError:
+                msb._show('錯誤', '音符只能輸入數字')
+                return
+            for i in inf:
+                if i[0] < 0 or i[0] > 7:
+                    msb._show('錯誤', '音符只能輸入(0~7)')
+                    return
+                elif i[1] <= 0 or i[1] > 4:
+                    msb._show('錯誤', '拍數只能輸入數字(1~4)')
+                    return
+            print(inf)
+            self.outputfn_txt.configure(text='當前樂譜 : ')
+            self.generator.spectrum = inf
+            for i, j in enumerate(inf):
+                if i % 4 is 0:
+                    self.outputfn_txt.configure(text=str(
+                        self.outputfn_txt.cget('text')+'| '+self.generator.hzArr[inf[i][0]][0] + '-' + str(inf[i][1]) + ' '))
+                else:
+                    self.outputfn_txt.configure(text=str(
+                        self.outputfn_txt.cget('text') + self.generator.hzArr[inf[i][0]][0] + '-' + str(inf[i][1]) + ' '))
 
     def btn_sumit_handler(self):
         if self.filename_inp.get() is '':
@@ -143,6 +183,9 @@ class GUIHandler:
             for i in self.generator.spectrum:
                 data.extend(self.generator.generate_wave(i[0], i[1]))
             self.generator.save_w(np.array(data), self.filename_inp.get())
+            p = open(self.filename_inp.get() + '.txt', 'w')
+            for i in self.generator.spectrum:
+                p.write(str(i[0])+','+str(i[1])+' ')
             msb._show('成功', '輸出成功!')
 
 

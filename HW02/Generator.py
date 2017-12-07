@@ -38,7 +38,7 @@ class SoundGenerator:
         return wave_data
 
     def lowgenerate_wave(self, chord, sec):
-        wave_data = 3 * np.sin(2 * np.pi * self.lowhzArr[chord][1] / self.sample_rate * np.arange(sec * 0.5 * self.sample_rate)).astype(np.float32)
+        wave_data = 8 * np.sin(2 * np.pi * self.lowhzArr[chord][1] / self.sample_rate * np.arange(sec * 0.5 * self.sample_rate)).astype(np.float32)
         return wave_data
 
     def save_wave(self, wave_data, mode):
