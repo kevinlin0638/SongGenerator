@@ -149,8 +149,8 @@ class GUIHandler:
                 [1, 1], [3, 1], [5, 1], [5, 1], [3, 4], [2, 1], [2, 1], [2, 1], [2, 1], [2, 1], [3, 1], [4, 2], [3, 1], [3, 1], [3, 1], [3, 1], [3, 1], [4, 1], [5, 2],
                 [5, 1], [3, 1], [3, 2], [4, 1], [2, 1], [2, 2], [1, 1], [3, 1], [5, 1], [5, 1], [1, 4]]
         for i in spec:
-            data.extend(self.generator.generate_wave(i[0], i[1]))
-            data_low.extend(self.generator.lowgenerate_wave(i[0], i[1]))
+            data.extend(self.generator.generate_wave(i[0], (i[1] * 60 / 120)))
+            data_low.extend(self.generator.lowgenerate_wave(i[0], (i[1] * 60 / 120)))
         for i, j in enumerate(data_low[:-25000]):
             data[i+25000] += data_low[i]
         data.extend(data_low[-25000:])
@@ -159,19 +159,24 @@ class GUIHandler:
 
     def frehomeworkout(self):
         data = []
-        data_low = []
         spec = [[5, 1], [3, 1], [3, 2], [4, 1], [2, 1], [2, 2], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [5, 1], [5, 2],
                 [5, 1], [3, 1], [3, 2], [4, 1], [2, 1], [2, 2],
                 [1, 1], [3, 1], [5, 1], [5, 1], [3, 4], [2, 1], [2, 1], [2, 1], [2, 1], [2, 1], [3, 1], [4, 2], [3, 1],
                 [3, 1], [3, 1], [3, 1], [3, 1], [4, 1], [5, 2],
                 [5, 1], [3, 1], [3, 2], [4, 1], [2, 1], [2, 2], [1, 1], [3, 1], [5, 1], [5, 1], [1, 4]]
         for i in spec:
-            data.extend(self.generator.kappa(i[0], i[1], False))
-            # data_low.extend(self.generator.kappa(i[0], i[1], True))
-        # for i, j in enumerate(data_low[:-25000]):
-        #     data[i + 25000] += data_low[i]
-        # data.extend(data_low[-25000:])
-        self.generator.save_wave(np.array(data), 1)
+            data.extend(self.generator.kappa(i[0], (i[1] * 60 / 120), False, 100))
+        self.generator.save_wave(np.array(data), 100)
+        data = []
+
+        for i in spec:
+            data.extend(self.generator.kappa(i[0], (i[1] * 60 / 120), False, 500))
+        self.generator.save_wave(np.array(data), 500)
+        data = []
+
+        for i in spec:
+            data.extend(self.generator.kappa(i[0], (i[1] * 60 / 120), False, 800))
+        self.generator.save_wave(np.array(data), 800)
         msb._show('成功', '輸出成功!')
 
     def btn_output_handler(self):
@@ -181,7 +186,7 @@ class GUIHandler:
         else:
             data = []
             for i in self.generator.spectrum:
-                data.extend(self.generator.generate_wave(i[0], i[1]))
+                data.extend(self.generator.generate_wave(i[0], (i[1] * 60 / 120)))
             self.generator.save_w(np.array(data), self.filename_inp.get())
             p = open(self.filename_inp.get() + '.txt', 'w')
             for i in self.generator.spectrum:
